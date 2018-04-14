@@ -11,8 +11,10 @@ be used.
 
 ## Installing
 
-Snipper can be installed by downloading a binary for your system from the releases
-page. Once installed somewhere useful on your path I recommend checking out the usage
+Snipper can be installed by downloading a stable binary for your system from the releases
+page or get the latest binary by invoking `go install github.com/farmdawgnation/snipper`
+
+Once installed somewhere useful on your path I recommend checking out the usage
 instructions first:
 
 ```
