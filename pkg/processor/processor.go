@@ -1,6 +1,7 @@
 package processor
 
 import (
+	//"fmt"
 	"reflect"
 	"strings"
 )
@@ -8,6 +9,7 @@ import (
 const nestingSeparator = "."
 
 const anyChildSelector = "*"
+const anyArrayMemberSelector = "[]"
 
 const actionAppend = "+"
 
@@ -48,6 +50,45 @@ func doSet(head interface{}, value interface{}, data map[interface{}]interface{}
 	return data
 }
 
+func ProcessArraySelector(
+	head interface{},
+	remain []interface{},
+	value interface{},
+	data interface{},
+) interface{} {
+	remainLen := len(remain)
+
+	switch typedHead := head.(type) {
+	case string:
+		switch typedHead {
+		case anyArrayMemberSelector:
+			nextHead := remain[0]
+			nextRemain := remain[1:remainLen]
+
+			switch typedLocation := data.(type) {
+			case []interface{}:
+				for index, member := range typedLocation {
+					if remainLen == 0 {
+						typedLocation[index] = value
+					} else {
+						switch typedMember := member.(type) {
+						case map[interface{}]interface{}:
+							typedLocation[index] = ProcessSelector(
+								nextHead,
+								nextRemain,
+								value,
+								typedMember,
+							)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return data
+}
+
 /**
  * Process an individual selector value
  */
@@ -68,10 +109,11 @@ func ProcessSelector(
 				if remainLen == 0 {
 					data = doSet(key.Interface(), value, data)
 				} else {
+					nextHead := remain[0]
+					nextRemain := remain[1:remainLen]
+
 					switch nextData := data[key.Interface()].(type) {
 					case map[interface{}]interface{}:
-						nextHead := remain[0]
-						nextRemain := remain[1:remainLen]
 						data[key.Interface()] = ProcessSelector(
 							nextHead,
 							nextRemain,
@@ -82,17 +124,24 @@ func ProcessSelector(
 				}
 			}
 
-			return data
-
 		default:
 			if remainLen == 0 {
 				return doSet(head, value, data)
 			} else if data[head] != nil {
+				nextHead := remain[0]
+				nextRemain := remain[1:remainLen]
+
 				switch nextData := data[head].(type) {
 				case map[interface{}]interface{}:
-					nextHead := remain[0]
-					nextRemain := remain[1:remainLen]
 					data[head] = ProcessSelector(
+						nextHead,
+						nextRemain,
+						value,
+						nextData,
+					)
+
+				case []interface{}:
+					data[head] = ProcessArraySelector(
 						nextHead,
 						nextRemain,
 						value,
