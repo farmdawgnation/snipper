@@ -169,3 +169,37 @@ func TestWildcardValueAppend(t *testing.T) {
     t.Error("Unexpected type under dogs key")
   }
 }
+
+func TestAnyArrayMemberSet(t *testing.T) {
+  dataMap := make(map[interface{}]interface{})
+  doggoArray := make([]interface{}, 2)
+
+  doggoArray[0] = "Shadow"
+  doggoArray[1] = "Shadow"
+
+  dataMap["doggos"] = doggoArray
+
+  remainList := make([]interface{}, 1)
+  remainList[0] = "[]"
+
+  resultingMap := processor.ProcessSelector("doggos", remainList, "Beamer", dataMap)
+
+  resultingDoggos := resultingMap["doggos"]
+
+  switch typedResultingDoggos := resultingDoggos.(type) {
+  case []interface{}:
+    if len(typedResultingDoggos) != 2 {
+      t.Error("Wrong number of elements in ", typedResultingDoggos)
+    } else {
+      if typedResultingDoggos[0] != "Beamer" {
+        t.Error("Expected first value to be Beamer got ", typedResultingDoggos[0])
+      }
+
+      if typedResultingDoggos[1] != "Beamer" {
+        t.Error("Expected second value to be Beamer got ", typedResultingDoggos[1])
+      }
+    }
+  default:
+    t.Error("Unexpected type under doggos key")
+  }
+}

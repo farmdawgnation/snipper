@@ -62,15 +62,15 @@ func ProcessArraySelector(
 	case string:
 		switch typedHead {
 		case anyArrayMemberSelector:
-			nextHead := remain[0]
-			nextRemain := remain[1:remainLen]
-
 			switch typedLocation := data.(type) {
 			case []interface{}:
 				for index, member := range typedLocation {
 					if remainLen == 0 {
 						typedLocation[index] = value
 					} else {
+						nextHead := remain[0]
+						nextRemain := remain[1:remainLen]
+
 						switch typedMember := member.(type) {
 						case map[interface{}]interface{}:
 							typedLocation[index] = ProcessSelector(
