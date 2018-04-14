@@ -1,7 +1,8 @@
 # Snipper
 
 Snipper is a proof of concept for applying Lift Snippet semantics to YAML
-templating.
+templating. Net-net: This should let you template your YAML without a yucky template
+language that makes your template hard to understand.
 
 Snipper takes in a template and then any number of transformers to create a
 final YAML file. YAML transformers are other YAML files whose keys conform to
