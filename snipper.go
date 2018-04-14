@@ -10,6 +10,9 @@ import (
 
 var (
 	showHelp bool
+	showVersion bool
+	BuildVersion string = "from source"
+	BuildTime string = "Unknown"
 )
 
 func check(err error) {
@@ -19,10 +22,13 @@ func check(err error) {
 }
 
 func main() {
+	flag.BoolVar(&showVersion, "version", false, "Show version")
 	flag.BoolVar(&showHelp, "help", false, "Show help")
 	flag.Parse()
 
-	if showHelp == true || len(flag.Args()) < 2 {
+	if showVersion == true {
+		fmt.Println("snipper version: " + BuildVersion + " / build time: " + BuildTime)
+	} else if showHelp == true || len(flag.Args()) < 2 {
 		fmt.Println("snipper - snippet style transformers for YAML")
 		fmt.Println("Usage: snipper template.yaml transformer.yaml [transformer.yaml [transformer.yaml ...]]")
 	} else {
