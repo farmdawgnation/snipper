@@ -16,8 +16,7 @@ func doAppend(head interface{}, value interface{}, data map[interface{}]interfac
 	case string:
 		switch typedNewValue := value.(type) {
 		case string:
-			finalValue := typedTemplateValue + typedNewValue
-			data[head] = finalValue
+			data[head] = typedTemplateValue + typedNewValue
 		}
 
 	case []interface{}:
@@ -99,13 +98,12 @@ func ProcessSelector(
 						value,
 						nextData,
 					)
-					return data
 				}
 			}
 		}
 	}
 
-	return nil
+	return data
 }
 
 /**
