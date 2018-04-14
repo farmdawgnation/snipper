@@ -8,101 +8,51 @@ final YAML file. YAML transformers are other YAML files whose keys conform to
 selector syntax and values indicate what input to the provided selector should
 be used.
 
-## Getting started
+## Installing
 
-Take the following example:
-
-```yaml
-spec:
-  name: awesome-dude
-  annotations:
-    name: awesome-dude
-    team: awesome-dude
-  metadata:
-    name: awesome-dude
-    team: awesome-dude
-  alerters:
-  - test
-```
-
-Someone obviously got lazy with copy and paste when writing this YAML. As usual,
-copy and paste works fine when you must, but anyone with a half decent
-templating engine will avoid it when possible. So, let's use Snipper to solve a
-very silly problem: let's change all of these to their correct values using
-Snipper transformers.
-
-The first thing we want is to change the name at the top level. To do so we
-could define a name transformer like so:
-
-```yaml
----
-transformer:
-- 'spec.name': very-important-production-application
-```
-
-Then run it with snipper.
+Snipper can be installed by downloading a binary for your system from the releases
+page. Once installed somewhere useful on your path I recommend checking out the usage
+instructions first:
 
 ```
-$ snipper template.yaml name_transformer.yaml
+snipper - snippet style transformers for YAML
+Usage: snipper template.yaml transformer.yaml [transformer.yaml [transformer.yaml ...]]
 ```
 
-And see that, indeed, `spec.name` has changed, but the other names remain
-unaffected. However, we can use selector syntax to get the result we want. Let's
-add another line to the transformer:
+## Using
 
-```yaml
----
-transformer:
-- 'spec.name': very-important-production-application
-- 'spec.*.name': very-important-production-application
-```
+Snipper takes in at least two yaml files: a template and one or more transformers that are
+applied to the template in the order they are provides.
 
-This tells snipper to apply to the top level name, _and_ to any name below a
-direct child of `spec`. But what if we could combine this into a single rule?
-Well, it turns out we can.
+Transformers are YAML files with special formatting rules. Those rules are:
 
-```yaml
-transformer:
-- 'spec.**.name': very-important-production-application
-```
+* The Transformer YAML structure must not nest: it must be a single-level object with keys
+  and values.
+* The keys of the Transformer YAML are specially encoded to represent nested items.
 
-This will cause snipper to change the value of all children of spec that have
-the key `name` to our desired value.
+If you want to see what I mean, check out the examples folder where I've outlined a few different
+ways the Transformer YAML works.
 
-Now, what if we wanted to define a separate transformer for teams and alerting?
-Well we might define a `teams_transformer.yaml` like so:
+## Limitations
 
-```yaml
-transformer:
-- 'spec.**.team': Data Science
-  'alerters':
-  - pagerduty
-```
+This is very much a proof of concept at this point. If you like the idea, please star it. Of note
+snipper doesn't really have any support for:
 
-Then we could apply _both_ of our transformers from the snipper command line:
+* Altering objects nested in arrays in the template
+* Probably many other things I'm not thinking of this moment?
 
-```
-$ snipper template.yaml name_transformer.yaml team_transformer.yaml
-```
+## Building
 
-That's all well and good, but what if I need to add extra alerters that are
-unrelated to the team as well? That's easy. Selector notation also supports
-operations that change the transformation from a simple replace to support
-append or prepend operations.
+To build this project you'll need:
 
-```yaml
-transformer:
-- 'alerters+':
-  - systems_dashboard
-```
+* Go (1.9 or greater)
+* Dep
 
-When added to the existing transformers this results in the following alerters:
+Once cloned run `dep ensure` to get the dependencies. Then `go build` to your heart's content.
+I'm not a fan of vendored repositories, so please restrain yourself from opening a PR or issue
+aong the lines of "you should have checked in your vendor directory."
 
-```yaml
-alerters:
-- pagerduty
-- systems_dashboard
-```
+## About the author
 
-You could have alernately made that a prepend operation by writing `+alerters`
-as your selector.
+Matt Farmer works at [MailChimp](https://mailchimp.com) and occasionally blogs at
+[farmdawgnation.com](https://farmdawgnation.com).
