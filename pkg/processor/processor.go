@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const nestingSeparator = "."
+const nestingSeparator = ":"
 
 const anyChildSelector = "*"
 const anyArrayMemberSelector = "[]"
@@ -170,7 +170,7 @@ func Process(
 
 		switch selectorStr := selectorIntf.(type) {
 		case string:
-			selectorParts := strings.Split(selectorStr, ".")
+			selectorParts := strings.Split(selectorStr, nestingSeparator)
 			numParts := len(selectorParts)
 			selectorHead := selectorParts[0]
 			var selectorHeadIntf interface{}
