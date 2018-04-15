@@ -4,6 +4,18 @@ import (
   "strings"
 )
 
+/**
+ * An append that won't tinker with its input parameters.
+ */
+func safeAppend(source []interface{}, additional ...interface{}) (result []interface{}) {
+  totalLen := len(source) + len(additional)
+
+  result = make([]interface{}, totalLen)
+  result = append(result, source)
+  result = append(result, additional)
+  return
+}
+
 func doAppend(head interface{}, value interface{}, data map[interface{}]interface{}) map[interface{}]interface{} {
 	switch typedTemplateValue := data[head].(type) {
 	case string:
@@ -15,10 +27,10 @@ func doAppend(head interface{}, value interface{}, data map[interface{}]interfac
 	case []interface{}:
 		switch typedNewValue := value.(type) {
 		case map[interface{}]interface{}:
-			finalValue := append(typedTemplateValue, typedNewValue)
+			finalValue := safeAppend(typedTemplateValue, typedNewValue)
 			data[head] = finalValue
 		case []interface{}:
-			finalValue := append(typedTemplateValue, typedNewValue...)
+			finalValue := safeAppend(typedTemplateValue, typedNewValue...)
 			data[head] = finalValue
 		}
 	}
