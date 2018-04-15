@@ -52,6 +52,38 @@ func doSet(head interface{}, value interface{}, data map[interface{}]interface{}
 	return data
 }
 
+func doAppendArray(head interface{}, value interface{}, index int, data []interface{}) []interface{} {
+	switch typedTemplateValue := data[index].(type) {
+	case string:
+		switch typedNewValue := value.(type) {
+		case string:
+			data[index] = typedTemplateValue + typedNewValue
+		}
+	}
+
+
+	return data
+}
+
+
+func doSetArray(head interface{}, value interface{}, index int, data []interface{}) []interface{} {
+	switch typedHead := head.(type) {
+	case string:
+		if strings.HasSuffix(typedHead, actionAppend) {
+			typedHeadWithoutSuffix := strings.TrimSuffix(typedHead, actionAppend)
+			var newHeadIntf interface{}
+			newHeadIntf = typedHeadWithoutSuffix
+
+			doAppendArray(newHeadIntf, value, index, data)
+		} else {
+			data[index] = value
+		}
+	}
+
+	return data
+}
+
+
 func ProcessArraySelector(
 	head interface{},
 	remain []interface{},
@@ -62,13 +94,13 @@ func ProcessArraySelector(
 
 	switch typedHead := head.(type) {
 	case string:
-		switch typedHead {
+		switch typedHead[0:2] {
 		case anyArrayMemberSelector:
 			switch typedLocation := data.(type) {
 			case []interface{}:
 				for index, member := range typedLocation {
 					if remainLen == 0 {
-						typedLocation[index] = value
+						data = doSetArray(head, value, index, typedLocation)
 					} else {
 						nextHead := remain[0]
 						nextRemain := remain[1:remainLen]
