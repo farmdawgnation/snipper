@@ -1,7 +1,6 @@
 package processor
 
 import (
-	//"fmt"
 	"reflect"
 	"strings"
 )
@@ -23,6 +22,9 @@ func doAppend(head interface{}, value interface{}, data map[interface{}]interfac
 
 	case []interface{}:
 		switch typedNewValue := value.(type) {
+		case map[interface{}]interface{}:
+			finalValue := append(typedTemplateValue, typedNewValue)
+			data[head] = finalValue
 		case []interface{}:
 			finalValue := append(typedTemplateValue, typedNewValue...)
 			data[head] = finalValue
