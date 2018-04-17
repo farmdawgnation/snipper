@@ -173,7 +173,6 @@ func Process(
 			template = ProcessSelector(selectorHeadIntf, selectorRemainIntf, selectorSetting, template)
 		}
 
-
 	}
 
 	return template

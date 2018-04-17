@@ -1,7 +1,7 @@
 package processor
 
 import (
-  "strings"
+	"strings"
 )
 
 func doAppend(head interface{}, value interface{}, data map[interface{}]interface{}) map[interface{}]interface{} {
@@ -22,7 +22,6 @@ func doAppend(head interface{}, value interface{}, data map[interface{}]interfac
 			data[head] = finalValue
 		}
 	}
-
 
 	return data
 }
@@ -52,7 +51,6 @@ func doAppendArray(head interface{}, value interface{}, index int, data []interf
 			data[index] = typedTemplateValue + typedNewValue
 		}
 	}
-
 
 	return data
 }

@@ -3,16 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
 	"github.com/farmdawgnation/snipper/pkg/processor"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 var (
-	showHelp bool
-	showVersion bool
+	showHelp     bool
+	showVersion  bool
 	BuildVersion string = "from source"
-	BuildTime string = "Unknown"
+	BuildTime    string = "Unknown"
 )
 
 func check(err error) {
