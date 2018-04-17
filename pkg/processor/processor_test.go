@@ -277,3 +277,78 @@ func TestAnyArrayMemberObjectPropertySet(t *testing.T) {
     t.Error("Unexpected type under doggos key")
   }
 }
+
+func TestExactArrayMemberAppend(t *testing.T) {
+  dataMap := make(map[interface{}]interface{})
+  doggoArray := make([]interface{}, 2)
+
+  doggoArray[0] = "Shadow"
+  doggoArray[1] = "Shadow"
+
+  dataMap["doggos"] = doggoArray
+
+  remainList := make([]interface{}, 1)
+  remainList[0] = "[0]+"
+
+  resultingMap := ProcessSelector("doggos", remainList, "Beamer", dataMap)
+
+  resultingDoggos := resultingMap["doggos"]
+
+  switch typedResultingDoggos := resultingDoggos.(type) {
+  case []interface{}:
+    if len(typedResultingDoggos) != 2 {
+      t.Error("Wrong number of elements in ", typedResultingDoggos)
+    } else {
+      if typedResultingDoggos[0] != "ShadowBeamer" {
+        t.Error("Expected first value to be ShadowBeamer got ", typedResultingDoggos[0])
+      }
+
+      if typedResultingDoggos[1] != "Shadow" {
+        t.Error("Expected second value to be Shadow got ", typedResultingDoggos[1])
+      }
+    }
+  default:
+    t.Error("Unexpected type under doggos key")
+  }
+}
+
+func TestExactArrayMemberObjectPropertySet(t *testing.T) {
+  dataMap := make(map[interface{}]interface{})
+  doggoArray := make([]interface{}, 2)
+
+  doggoZero := make(map[interface{}]interface{})
+  doggoZero["name"] = "Shadow"
+  doggoArray[0] = doggoZero
+
+  doggoOne := make(map[interface{}]interface{})
+  doggoOne["name"] = "Beamer"
+  doggoArray[1] = doggoOne
+
+  dataMap["doggos"] = doggoArray
+
+  remainList := make([]interface{}, 2)
+  remainList[0] = "[0]"
+  remainList[1] = "goodDog"
+
+  resultingMap := ProcessSelector("doggos", remainList, "true", dataMap)
+
+  resultingDoggos := resultingMap["doggos"]
+
+  switch typedResultingDoggos := resultingDoggos.(type) {
+  case []interface{}:
+    if len(typedResultingDoggos) != 2 {
+      t.Error("Wrong number of elements in ", typedResultingDoggos)
+    } else {
+      for _, member := range typedResultingDoggos[0:1] {
+        switch typedMember := member.(type) {
+        case map[interface{}]interface{}:
+          if typedMember["goodDog"] != "true" {
+            t.Error("Expected goodDog = true on ", typedMember)
+          }
+        }
+      }
+    }
+  default:
+    t.Error("Unexpected type under doggos key")
+  }
+}

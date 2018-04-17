@@ -2,6 +2,8 @@ package processor
 
 import (
 	"reflect"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -10,6 +12,9 @@ const nestingSeparator = ":"
 const anyChildSelector = "*"
 const anyArrayMemberSelector = "[]"
 const actionAppend = "+"
+
+// Syntax regexes
+var arrayMemberSelector = regexp.MustCompile("^\\[([0-9]*)\\](.)?$")
 
 func ProcessArraySelector(
 	head interface{},
@@ -21,18 +26,20 @@ func ProcessArraySelector(
 
 	switch typedHead := head.(type) {
 	case string:
-		switch typedHead[0:2] {
-		case anyArrayMemberSelector:
-			switch typedLocation := data.(type) {
-			case []interface{}:
-				for index, member := range typedLocation {
+		arrayMemberSelectorMatches := arrayMemberSelector.FindStringSubmatch(typedHead)
+
+		switch typedLocation := data.(type) {
+		case []interface{}:
+
+			if arrayMemberSelectorMatches[1] == "" {
+				for index := range typedLocation {
 					if remainLen == 0 {
 						data = doSetArray(head, value, index, typedLocation)
 					} else {
 						nextHead := remain[0]
 						nextRemain := remain[1:remainLen]
 
-						switch typedMember := member.(type) {
+						switch typedMember := typedLocation[index].(type) {
 						case map[interface{}]interface{}:
 							typedLocation[index] = ProcessSelector(
 								nextHead,
@@ -43,7 +50,27 @@ func ProcessArraySelector(
 						}
 					}
 				}
+			} else {
+				selectedIndex, _ := strconv.Atoi(arrayMemberSelectorMatches[1])
+
+				if remainLen == 0 {
+					data = doSetArray(head, value, selectedIndex, typedLocation)
+				} else {
+					nextHead := remain[0]
+					nextRemain := remain[1:remainLen]
+
+					switch typedMember := typedLocation[selectedIndex].(type) {
+					case map[interface{}]interface{}:
+						typedLocation[selectedIndex] = ProcessSelector(
+							nextHead,
+							nextRemain,
+							value,
+							typedMember,
+						)
+					}
+				}
 			}
+
 		}
 	}
 
