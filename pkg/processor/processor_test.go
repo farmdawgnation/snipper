@@ -1,7 +1,6 @@
 package processor
 
 import "testing"
-import "github.com/farmdawgnation/snipper/pkg/processor"
 
 func TestSimpleValueSet(t *testing.T) {
   dataMap := make(map[interface{}]interface{})
@@ -9,7 +8,7 @@ func TestSimpleValueSet(t *testing.T) {
 
   dataMap["bacon"] = "bacon"
 
-  resultingMap := processor.ProcessSelector("bacon", remainList, "walnut", dataMap)
+  resultingMap := ProcessSelector("bacon", remainList, "walnut", dataMap)
 
   if resultingMap["bacon"] != "walnut" {
     t.Error("Expected walnut got", resultingMap["bacon"])
@@ -22,7 +21,7 @@ func TestSimpleValueAppend(t *testing.T) {
 
   dataMap["bacon"] = "bacon"
 
-  resultingMap := processor.ProcessSelector("bacon+", remainList, "walnut", dataMap)
+  resultingMap := ProcessSelector("bacon+", remainList, "walnut", dataMap)
 
   if resultingMap["bacon"] != "baconwalnut" {
     t.Error("Expected baconwalnut got", resultingMap["bacon"])
@@ -40,7 +39,7 @@ func TestNestedValueSet(t *testing.T) {
   innerDataMap["bacon"] = "bacon"
   dataMap["parent"] = innerDataMap
 
-  resultingMap := processor.ProcessSelector("parent", remainList, "walnut", dataMap)
+  resultingMap := ProcessSelector("parent", remainList, "walnut", dataMap)
 
   switch innerMap := resultingMap["parent"].(type) {
   case map[interface{}]interface{}:
@@ -63,7 +62,7 @@ func TestNestedValueAppend(t *testing.T) {
   innerDataMap["bacon"] = "bacon"
   dataMap["parent"] = innerDataMap
 
-  resultingMap := processor.ProcessSelector("parent", remainList, "walnut", dataMap)
+  resultingMap := ProcessSelector("parent", remainList, "walnut", dataMap)
 
   switch innerMap := resultingMap["parent"].(type) {
   case map[interface{}]interface{}:
@@ -94,7 +93,7 @@ func TestWildcardValueSet(t *testing.T) {
   remainList[0] = "*"
   remainList[1] = "name"
 
-  resultingMap := processor.ProcessSelector("dogs", remainList, "Beamer", dataMap)
+  resultingMap := ProcessSelector("dogs", remainList, "Beamer", dataMap)
 
   switch middleMap := resultingMap["dogs"].(type) {
   case map[interface{}]interface{}:
@@ -141,7 +140,7 @@ func TestWildcardValueAppend(t *testing.T) {
   remainList[0] = "*"
   remainList[1] = "name+"
 
-  resultingMap := processor.ProcessSelector("dogs", remainList, "Beamer", dataMap)
+  resultingMap := ProcessSelector("dogs", remainList, "Beamer", dataMap)
 
   switch middleMap := resultingMap["dogs"].(type) {
   case map[interface{}]interface{}:
@@ -182,7 +181,7 @@ func TestAnyArrayMemberSet(t *testing.T) {
   remainList := make([]interface{}, 1)
   remainList[0] = "[]"
 
-  resultingMap := processor.ProcessSelector("doggos", remainList, "Beamer", dataMap)
+  resultingMap := ProcessSelector("doggos", remainList, "Beamer", dataMap)
 
   resultingDoggos := resultingMap["doggos"]
 
@@ -216,7 +215,7 @@ func TestAnyArrayMemberAppend(t *testing.T) {
   remainList := make([]interface{}, 1)
   remainList[0] = "[]+"
 
-  resultingMap := processor.ProcessSelector("doggos", remainList, "Beamer", dataMap)
+  resultingMap := ProcessSelector("doggos", remainList, "Beamer", dataMap)
 
   resultingDoggos := resultingMap["doggos"]
 
@@ -256,7 +255,7 @@ func TestAnyArrayMemberObjectPropertySet(t *testing.T) {
   remainList[0] = "[]"
   remainList[1] = "goodDog"
 
-  resultingMap := processor.ProcessSelector("doggos", remainList, "true", dataMap)
+  resultingMap := ProcessSelector("doggos", remainList, "true", dataMap)
 
   resultingDoggos := resultingMap["doggos"]
 
