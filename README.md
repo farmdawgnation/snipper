@@ -178,5 +178,5 @@ in your vendor directory."
 
 Matt Farmer works at [MailChimp](https://mailchimp.com) and occasionally blogs at
 [farmdawgnation.com](https://farmdawgnation.com). He's primarily a JVM
-developer, is learning Go and does agree that there are situations where that is
+developer, is learning Go, and does agree that there are situations where that is
 the more sensible choice.
