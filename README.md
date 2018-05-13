@@ -7,6 +7,22 @@ Inspired by the [Lift Framework][lift] snippets, Snipper aims to separate the
 **structure file** from the **transformations** that need to be applied to it.
 The most important thing: _transformations are YAML too._
 
+More formally, transformations define a function that takes in YAML and produces
+different YAML on the other end. These functions are composable, so that you can
+layer them on top of each other. Conditional statements are exchanged with
+the decision to apply or not to apply a particular function to your templates.
+The way that makes the most sense to apply those conditions will vary based on
+the complexity of what you're building, and Snipper remains unopinionated on
+how you do that.
+
+Snipper is still very new, and I expect rough edges and missing functionality.
+Please let me know what you think by [opening an issue][issue]. I welcome
+bug reports, feature requests, and just general feedback on what you think.
+Though Snipper itself is new, the ideas it's built on are over a decade old,
+and I believe are proven out with the experience of Lift Framework developers.
+
+Please let me know what you think.
+
 Snipper supports:
 
 * Explicitly setting a particular key in an object from your structure.
@@ -22,13 +38,11 @@ Snipper does not support:
 * **If statements.** If you have transforms that should only be applied in some
   situations, separate them out into their own file and do or don't apply them
   to your template. Admittedly, this moves the "conditional" aspect of rendering
-  your YAML to somewhere else. However, in exchange you gain a significant boost
-  in long term readability if your YAML grows and gains functionality and
-  considerations, as most things do. Further, separating out the transforms into
-  separate projects later on is a lot easier than disentangling a bunch of `if`/
-  `elseif` and ensuring that you got the same result.
+  your YAML to somewhere else. But this separation between the template, the
+  transforms, and the conditions provide for clean, comprehensible structures.
 
 [lift]: http://liftweb.net
+[issue]: https://github.com/farmdawgnation/snipper/issues
 
 ## Installing
 
@@ -122,7 +136,7 @@ Snipper's selector syntax has the following rules:
   effect we wanted.
 * You can select keys nested in other objects by delimiting those with a colon
   (`:`). In a Kubernetes pod spec the containers are at `'spec:containers'` in
-  Snipper selector syntax. We chose this because periods (`.`) are exceptionally
+  Snipper selector syntax. I chose this because periods (`.`) are exceptionally
   common field names in K8S-land. The piece on either side of a colon is called
   a **path**.
 * If a path has square brackets in it (`[]`) it does something with arrays.
@@ -143,7 +157,7 @@ behavior by adding an **action character** to the end of your selector:
   wanted to add an explicit tag to all your alpine containers you could use
   this: `'spec:containers:[image=alpine]:image+': latest`.
 
-We encourage you to browse the [examples][examples] folder and try some of them
+I encourage you to browse the [examples][examples] folder and try some of them
 out for yourself to see what they do.
 
 [examples]:https://github.com/farmdawgnation/snipper/tree/master/examples
@@ -163,4 +177,6 @@ in your vendor directory."
 ## About the author
 
 Matt Farmer works at [MailChimp](https://mailchimp.com) and occasionally blogs at
-[farmdawgnation.com](https://farmdawgnation.com).
+[farmdawgnation.com](https://farmdawgnation.com). He's primarily a JVM
+developer, is learning Go and does agree that there are situations where that is
+the more sensible choice.
