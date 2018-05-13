@@ -15,6 +15,7 @@ const actionAppend = "+"
 
 // Syntax regexes
 var arrayMemberSelector = regexp.MustCompile("^\\[([0-9]*)\\](.)?$")
+var arraySearcherSelector = regexp.MustCompile("^\\[([^=]+)=([^\\]]+)\\](.)?$")
 
 func ProcessArraySelector(
 	head interface{},
@@ -26,12 +27,12 @@ func ProcessArraySelector(
 
 	switch typedHead := head.(type) {
 	case string:
-		arrayMemberSelectorMatches := arrayMemberSelector.FindStringSubmatch(typedHead)
-
 		switch typedLocation := data.(type) {
 		case []interface{}:
 
-			if arrayMemberSelectorMatches[1] == "" {
+			// This has to be a prefix check because action characters could follow
+			// the any array selector if its in the sentinal position.
+			if strings.HasPrefix(typedHead, anyArrayMemberSelector) {
 				for index := range typedLocation {
 					if remainLen == 0 {
 						data = doSetArray(head, value, index, typedLocation)
@@ -50,7 +51,8 @@ func ProcessArraySelector(
 						}
 					}
 				}
-			} else {
+			} else if arrayMemberSelector.MatchString(typedHead) {
+				arrayMemberSelectorMatches := arrayMemberSelector.FindStringSubmatch(typedHead)
 				selectedIndex, _ := strconv.Atoi(arrayMemberSelectorMatches[1])
 
 				if remainLen == 0 {
@@ -67,6 +69,27 @@ func ProcessArraySelector(
 							value,
 							typedMember,
 						)
+					}
+				}
+			} else if arraySearcherSelector.MatchString(typedHead) {
+				arraySearcherSelectorMatches := arraySearcherSelector.FindStringSubmatch(typedHead)
+				searchProperty := interface{}(arraySearcherSelectorMatches[1])
+				searchValue := interface{}(arraySearcherSelectorMatches[2])
+				//actionCharacter := arraySearcherSelectorMatches[3]
+				nextHead := remain[0]
+				nextRemain := remain[1:remainLen]
+
+				for index := range typedLocation {
+					switch typedMember := typedLocation[index].(type) {
+					case map[interface{}]interface{}:
+						if typedMember[searchProperty] == searchValue {
+							typedLocation[index] = ProcessSelector(
+								nextHead,
+								nextRemain,
+								value,
+								typedMember,
+							)
+						}
 					}
 				}
 			}

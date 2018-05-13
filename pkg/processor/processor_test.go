@@ -351,3 +351,44 @@ func TestExactArrayMemberObjectPropertySet(t *testing.T) {
 		t.Error("Unexpected type under doggos key")
 	}
 }
+
+func TestPropertyMatchingArrayMemberObjectPropertySet(t *testing.T) {
+	dataMap := make(map[interface{}]interface{})
+	doggoArray := make([]interface{}, 2)
+
+	doggoZero := make(map[interface{}]interface{})
+	doggoZero["name"] = "Shadow"
+	doggoArray[0] = doggoZero
+
+	doggoOne := make(map[interface{}]interface{})
+	doggoOne["name"] = "Beamer"
+	doggoArray[1] = doggoOne
+
+	dataMap["doggos"] = doggoArray
+
+	remainList := make([]interface{}, 2)
+	remainList[0] = "[name=Shadow]"
+	remainList[1] = "goodDog"
+
+	resultingMap := ProcessSelector("doggos", remainList, "true", dataMap)
+
+	resultingDoggos := resultingMap["doggos"]
+
+	switch typedResultingDoggos := resultingDoggos.(type) {
+	case []interface{}:
+		if len(typedResultingDoggos) != 2 {
+			t.Error("Wrong number of elements in ", typedResultingDoggos)
+		} else {
+			for _, member := range typedResultingDoggos[0:1] {
+				switch typedMember := member.(type) {
+				case map[interface{}]interface{}:
+					if typedMember["goodDog"] != "true" {
+						t.Error("Expected goodDog = true on ", typedMember)
+					}
+				}
+			}
+		}
+	default:
+		t.Error("Unexpected type under doggos key")
+	}
+}
